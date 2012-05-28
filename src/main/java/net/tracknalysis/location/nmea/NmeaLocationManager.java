@@ -153,12 +153,12 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
             if (deltaT < 100 || deltaT > -100) {
                 
                 LocationBuilder builder = new Location.LocationBuilder();
+                // TODO assumes that altitude is always in meters even though the sentence has a unit field?
                 builder.setAltitude(currentGgaSentence.getAltitude());
                 builder.setBearing(currentRmcSentence.getHeading());
                 builder.setLatitude(currentGgaSentence.getLatitude());
                 builder.setLongitude(currentGgaSentence.getLongitude());
-                builder.setAccuracy(currentGgaSentence.getHdop());
-                builder.setSpeed(currentRmcSentence.getSpeed());
+                builder.setSpeed(currentRmcSentence.getSpeed() * 0.514444444f);
                 builder.setTime(currentGgaSentence.getTime());
                 builder.setReceivedTime(currentGgaSentence.getSentenceParsingStartTime());
                 

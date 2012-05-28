@@ -39,6 +39,10 @@ public class GgaSentence extends AbstractNmeaSentence {
         DGPS;
     }
 
+    /**
+     * Returns the UTC time of the location fix as millisecond offset into the day
+     * on which the capture occurred.
+     */
     public long getTime() {
         return time;
     }
@@ -47,6 +51,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.time = time;
     }
 
+    /**
+     * Returns the latitude of the fix in degrees.
+     */
     public double getLatitude() {
         return latitude;
     }
@@ -55,6 +62,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.latitude = latitude;
     }
 
+    /**
+     * Returns the longitude of the fix in degrees.
+     */
     public double getLongitude() {
         return longitude;
     }
@@ -63,6 +73,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.longitude = longitude;
     }
 
+    /**
+     * Returns the fix quality indicator for the fix.
+     */
     public FixQuality getFixQuality() {
         return fixQuality;
     }
@@ -71,6 +84,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.fixQuality = fixQuality;
     }
 
+    /**
+     * Returns the number of satellites involved in the fix.
+     */
     public int getNumberOfSatelites() {
         return numberOfSatelites;
     }
@@ -79,6 +95,11 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.numberOfSatelites = numberOfSatelites;
     }
 
+    /**
+     * Returns the <a
+     * href="http://en.wikipedia.org/wiki/Dilution_of_precision_(GPS)"
+     * >horizontal dilution of precision</a> for the fix. See .
+     */
     public float getHdop() {
         return hdop;
     }
@@ -87,6 +108,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.hdop = hdop;
     }
 
+    /**
+     * Returns the altitude of the fix.
+     */
     public double getAltitude() {
         return altitude;
     }
@@ -95,6 +119,9 @@ public class GgaSentence extends AbstractNmeaSentence {
         this.altitude = altitude;
     }
     
+    /**
+     * Returns the unit of the altitude of the fix.
+     */
     public char getAltitudeUnits() {
         return altitudeUnits;
     }

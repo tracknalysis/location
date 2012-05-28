@@ -45,6 +45,10 @@ public class RmcSentence extends AbstractNmeaSentence {
         NOT_VALID;
     }
 
+    /**
+     * Returns the UTC time of the location fix as millisecond offset into the day
+     * on which the capture occurred.
+     */
     public long getTime() {
         return time;
     }
@@ -61,6 +65,9 @@ public class RmcSentence extends AbstractNmeaSentence {
         this.statusIndicator = statusIndicator;
     }
 
+    /**
+     * Returns the latitude of the fix in degrees.
+     */
     public double getLatitude() {
         return latitude;
     }
@@ -69,6 +76,9 @@ public class RmcSentence extends AbstractNmeaSentence {
         this.latitude = latitude;
     }
 
+    /**
+     * Returns the longitude of the fix in degrees.
+     */
     public double getLongitude() {
         return longitude;
     }
@@ -77,6 +87,9 @@ public class RmcSentence extends AbstractNmeaSentence {
         this.longitude = longitude;
     }
 
+    /**
+     * Returns the speed over ground at the time of the fix in knots.
+     */
     public float getSpeed() {
         return speed;
     }
@@ -85,6 +98,9 @@ public class RmcSentence extends AbstractNmeaSentence {
         this.speed = speed;
     }
 
+    /**
+     * Returns the heading at the time of the fix in degrees.
+     */
     public float getHeading() {
         return heading;
     }

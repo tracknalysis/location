@@ -18,7 +18,7 @@ package net.tracknalysis.location.nmea.simple;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import net.tracknalysis.location.nmea.TimeUtil;
+import net.tracknalysis.common.util.TimeUtil;
 
 /**
  * @author David Valeri

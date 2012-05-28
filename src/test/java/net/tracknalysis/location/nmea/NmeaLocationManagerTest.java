@@ -77,9 +77,8 @@ public class NmeaLocationManagerTest {
         assertEquals(38.983891666666665d, location.getLatitude(), 0);
         assertEquals(-77.53281333333332d, location.getLongitude(), 0);
         assertEquals(113.3f, location.getAltitude(), 0);
-        assertEquals(0.09f, location.getSpeed(), 0);
+        assertEquals(0.0463000051677227f, location.getSpeed(), 0);
         assertEquals(229.39f, location.getBearing(), 0);
-        assertEquals(1.37f, location.getAccuracy(), 0);
     }
     
     @Test
@@ -120,7 +119,6 @@ public class NmeaLocationManagerTest {
             assertEquals(65038200l, location.getTime());
             assertEquals(38.983891666666665d, location.getLatitude(), 0);
             assertEquals(-77.53281333333332d, location.getLongitude(), 0);
-            assertEquals(1.37f, location.getAccuracy(), 0);
             assertEquals(113.3f, location.getAltitude(), 0);
             
             location = locations.get(118);
@@ -128,7 +126,7 @@ public class NmeaLocationManagerTest {
             assertEquals(65050000, location.getTime());
             assertEquals(38.983896666666666d, location.getLatitude(), 0);
             assertEquals(-77.53283333333334d, location.getLongitude(), 0);
-            assertEquals(0.28999999165534973f, location.getSpeed(), 0);
+            assertEquals(0.14918889105319977f, location.getSpeed(), 0);
             assertEquals(101.2699966430664f, location.getBearing(), 0);
             
         } finally {

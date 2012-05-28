@@ -47,8 +47,8 @@ public interface RouteListener {
 
     /**
      * 
-     * @param waypoint
-     *            the waypoint that triggered the event.
+     * @param int the zero based index of the waypoint in the route that
+     *        triggered the event
      * @param route
      *            the route that the current waypoint is part of
      * @param locationTime
@@ -58,8 +58,9 @@ public interface RouteListener {
      *            the time, in milliseconds since midnight January 1, 1970 UTC,
      *            at which location update that triggered the event occurred
      *            based on system time.
-     * @param eventType the type of the event
+     * @param eventType
+     *            the type of the event
      */
-    void waypointEvent(Waypoint waypoint, Route route, long locationTime,
+    void waypointEvent(int waypointIndex, Route route, long locationTime,
             long systemTime, WaypointEventType eventType, float distanceToWaypoint);
 }

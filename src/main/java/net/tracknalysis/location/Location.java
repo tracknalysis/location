@@ -32,8 +32,6 @@ public final class Location {
     private float speed;
     private boolean hasBearing;
     private float bearing;
-    private boolean hasAccuracy;
-    private float accuracy;
     
     protected Location() {
     }
@@ -42,10 +40,14 @@ public final class Location {
         return receivedTime;
     }
 
-    public void setReceivedTime(long receivedTime) {
+    protected void setReceivedTime(long receivedTime) {
         this.receivedTime = receivedTime;
     }
 
+    /**
+     * Returns the UTC time of the location fix as millisecond offset into the day
+     * on which the capture occurred.
+     */
     public long getTime() {
         return time;
     }
@@ -54,6 +56,9 @@ public final class Location {
         this.time = time;
     }
     
+    /**
+     * Returns the latitude of the fix in degrees.
+     */
     public double getLatitude() {
         return latitude;
     }
@@ -62,6 +67,9 @@ public final class Location {
         this.latitude = latitude;
     }
 
+    /**
+     * Returns the longitude of the fix in degrees.
+     */
     public double getLongitude() {
         return longitude;
     }
@@ -70,6 +78,9 @@ public final class Location {
         this.longitude = longitude;
     }
     
+    /**
+     * Returns the altitude of the fix in meters.
+     */
     public double getAltitude() {
         return altitude;
     }
@@ -78,6 +89,9 @@ public final class Location {
         this.altitude = altitude;
     }
 
+    /**
+     * Returns the speed over ground at the time of the fix in meters per second.
+     */
     public float getSpeed() {
         return speed;
     }
@@ -87,6 +101,9 @@ public final class Location {
         hasSpeed = true;
     }
 
+    /**
+     * Returns the heading at the time of the fix in degrees.
+     */
     public float getBearing() {
         return bearing;
     }
@@ -94,15 +111,6 @@ public final class Location {
     protected void setBearing(float bearing) {
         this.bearing = bearing;
         hasBearing = true;
-    }
-
-    public float getAccuracy() {
-        return accuracy;
-    }
-
-    protected void setAccuracy(float accuracy) {
-        this.accuracy = accuracy;
-        hasAccuracy = true;
     }
     
     @Override
@@ -127,11 +135,7 @@ public final class Location {
         builder.append(", hasBearing=");
         builder.append(hasBearing);
         builder.append(", bearing=");
-        builder.append(bearing);
-        builder.append(", hasAccuracy=");
-        builder.append(hasAccuracy);
-        builder.append(", accuracy=");
-        builder.append(accuracy);
+        builder.append(bearing);;
         builder.append("]");
         return builder.toString();
     }
@@ -148,8 +152,6 @@ public final class Location {
         private float speed = 0.0f;
         private boolean hasBearing;
         private float bearing = 0.0f;
-        private boolean hasAccuracy;
-        private float accuracy = 0.0f;
         
         public long getReceivedTime() {
             return receivedTime;
@@ -210,15 +212,6 @@ public final class Location {
             hasBearing = true;
         }
 
-        public float getAccuracy() {
-            return accuracy;
-        }
-
-        public void setAccuracy(float accuracy) {
-            this.accuracy = accuracy;
-            hasAccuracy = true;
-        }
-
         public boolean isHasAltitude() {
             return hasAltitude;
         }
@@ -245,10 +238,6 @@ public final class Location {
             
             if (hasBearing) {
                 location.setBearing(getBearing());
-            }
-            
-            if (hasAccuracy) {
-                location.setAccuracy(getAccuracy());
             }
             
             if (hasAltitude) {
