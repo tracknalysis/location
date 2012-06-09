@@ -316,9 +316,17 @@ public class SimpleNmeaParser implements NmeaParser {
                     }
                     
                 } catch (Exception e) {
-                    LOG.error("Exception while parsing NMEA input.  Parser was in "
+                    
+                    String logMessage = "Exception while parsing NMEA input.  Parser was in "
                             + "state '" + state + "' and parser buffer contains '" + buffer
-                            + "' parser running is " + run + ".", e);
+                            + "' parser running is " + run + ".";
+                    
+                    if (run) {
+                        LOG.error(logMessage, e);
+                    } else {
+                        LOG.info(logMessage, e);
+                    }
+                    
                     buffer.setLength(0);
                     state = NmeaReaderState.WAITING_FOR_SYNCH;
                 }

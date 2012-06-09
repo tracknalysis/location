@@ -135,15 +135,37 @@ class GgaSentenceParser extends AbstractNmeaSentenceParser {
                 break;
             case READING_FIX_QUALITY:
                 if (buffer.length() == 1) {
-                    if ('0' == buffer.charAt(0)) {
-                        sentence.setFixQuality(GgaSentence.FixQuality.INVALID);
-                    } else if ('1' == buffer.charAt(0)) {
-                        sentence.setFixQuality(GgaSentence.FixQuality.GPS);
-                    } else if ('2' == buffer.charAt(0)) {
-                        sentence.setFixQuality(GgaSentence.FixQuality.DGPS);
-                    } else {
-                        nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
-                        LOG.error("Invalid NMEA fix quality {}.", buffer);
+                    switch (buffer.charAt(0)) {
+                        case '0':
+                            sentence.setFixQuality(GgaSentence.FixQuality.INVALID);
+                            break;
+                        case '1':
+                            sentence.setFixQuality(GgaSentence.FixQuality.GPS);
+                            break;
+                        case '2':
+                            sentence.setFixQuality(GgaSentence.FixQuality.DGPS);
+                            break;
+                        case '3':
+                            sentence.setFixQuality(GgaSentence.FixQuality.PPS);
+                            break;
+                        case '4':
+                            sentence.setFixQuality(GgaSentence.FixQuality.RTK);
+                            break;
+                        case '5':
+                            sentence.setFixQuality(GgaSentence.FixQuality.FLOAT_RTK);
+                            break;
+                        case '6':
+                            sentence.setFixQuality(GgaSentence.FixQuality.ESTIMATED);
+                            break;
+                        case '7':
+                            sentence.setFixQuality(GgaSentence.FixQuality.MANUAL);
+                            break;
+                        case '8':
+                            sentence.setFixQuality(GgaSentence.FixQuality.SIMULATION);
+                            break;
+                        default:
+                            nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
+                            LOG.error("Invalid NMEA fix quality {}.", buffer);
                     }
                     
                     sentenceParserState = GgaSentenceParserState.READING_NUMBER_OF_SATELITES;

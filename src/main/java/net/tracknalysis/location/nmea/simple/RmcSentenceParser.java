@@ -83,13 +83,16 @@ class RmcSentenceParser extends AbstractNmeaSentenceParser {
                 break;
             case READING_STATUS_INDICATOR:
                 if (buffer.length() == 1) {
-                    if ('A' == buffer.charAt(0)) {
-                        sentence.setStatusIndicator(StatusIndicator.ACTIVE);
-                    } else if ('V' == buffer.charAt(0)) {
-                        sentence.setStatusIndicator(StatusIndicator.VOID);
-                    } else {
-                        nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
-                        LOG.error("Invalid NMEA status indicator {}.", buffer);
+                    switch (buffer.charAt(0)) {
+                        case 'A':
+                            sentence.setStatusIndicator(StatusIndicator.ACTIVE);
+                            break;
+                        case 'V':
+                            sentence.setStatusIndicator(StatusIndicator.VOID);
+                            break;
+                        default: 
+                            nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
+                            LOG.error("Invalid NMEA status indicator {}.", buffer);
                     }
                     
                     sentenceParserState = RmcSentenceParserState.READING_LAT;
@@ -205,13 +208,28 @@ class RmcSentenceParser extends AbstractNmeaSentenceParser {
                 nextNmeaReaderState = NmeaReaderState.READING_CHECKSUM;
                 
                 if (buffer.length() == 1) {
-                    if ('A' == buffer.charAt(0)) {
-                        sentence.setModeIndicator(ModeIndicator.AUTONOMOUS);
-                    } else if ('N' == buffer.charAt(0)) {
-                        sentence.setModeIndicator(ModeIndicator.NOT_VALID);
-                    } else {
-                        nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
-                        LOG.error("Invalid NMEA mode indicator {}.", buffer);
+                    switch (buffer.charAt(0)) {
+                        case 'A':
+                            sentence.setModeIndicator(ModeIndicator.AUTONOMOUS);
+                            break;
+                        case 'D':
+                            sentence.setModeIndicator(ModeIndicator.DIFFERENTIAL);
+                            break;
+                        case 'E':
+                            sentence.setModeIndicator(ModeIndicator.ESTIMATED);
+                            break;
+                        case 'M':
+                            sentence.setModeIndicator(ModeIndicator.MANUAL);
+                            break;
+                        case 'S':
+                            sentence.setModeIndicator(ModeIndicator.SIMULATED);
+                            break;
+                        case 'N':
+                            sentence.setModeIndicator(ModeIndicator.NOT_VALID);
+                            break;
+                        default:
+                            nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;
+                            LOG.error("Invalid NMEA mode indicator {}.", buffer);
                     }
                 } else {
                     nextNmeaReaderState = NmeaReaderState.WAITING_FOR_SYNCH;

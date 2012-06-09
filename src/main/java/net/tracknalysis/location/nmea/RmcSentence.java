@@ -42,6 +42,10 @@ public class RmcSentence extends AbstractNmeaSentence {
     
     public enum ModeIndicator {
         AUTONOMOUS,
+        DIFFERENTIAL,
+        ESTIMATED,
+        MANUAL,
+        SIMULATED,
         NOT_VALID;
     }
 

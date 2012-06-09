@@ -34,9 +34,9 @@ public class GgaSentence extends AbstractNmeaSentence {
     private int dgpsRefStationId;
     
     public enum FixQuality {
-        INVALID,
-        GPS,
-        DGPS;
+        INVALID, GPS, DGPS, PPS, RTK,
+        FLOAT_RTK, ESTIMATED, MANUAL,
+        SIMULATION;
     }
 
     /**
