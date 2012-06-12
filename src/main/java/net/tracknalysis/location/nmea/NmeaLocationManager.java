@@ -34,8 +34,6 @@ import net.tracknalysis.location.LocationManager;
 import net.tracknalysis.location.Route;
 import net.tracknalysis.location.RouteListener;
 import net.tracknalysis.location.RouteManager;
-import net.tracknalysis.location.nmea.GgaSentence.FixQuality;
-import net.tracknalysis.location.nmea.RmcSentence.ModeIndicator;
 import net.tracknalysis.location.nmea.simple.SimpleNmeaParser;
 
 /**
@@ -189,27 +187,31 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
         if (sentence instanceof GgaSentence) {
             GgaSentence ggaSentence = (GgaSentence) sentence;
             
-            if (ggaSentence.getFixQuality() != FixQuality.INVALID) {
-                
-                LOG.debug("Recieved a new GGA sentence, {}.  Discarding old GGA sentence {}.",
-                        ggaSentence, currentGgaSentence);
-                
-                currentGgaSentence = ggaSentence;
-            } else {
-                LOG.warn("Received {}.  GPS device does not have fix.  Ignoring sentence.",
-                        ggaSentence);
+            switch (ggaSentence.getFixQuality()) {
+                case DGPS:
+                case GPS:
+                    LOG.debug("Recieved a new GGA sentence, {}.  Discarding old GGA sentence {}.",
+                            ggaSentence, currentGgaSentence);
+                    
+                    currentGgaSentence = ggaSentence;
+                    break;
+                default:
+                    LOG.warn("Received {}.  GPS device does not have fix.  Ignoring sentence.",
+                            ggaSentence);
             }
         } else if (sentence instanceof RmcSentence) {
             RmcSentence rmcSentence = (RmcSentence) sentence;
             
-            if (rmcSentence.getModeIndicator() == ModeIndicator.AUTONOMOUS) {
-                LOG.debug("Recieved a new RMC sentence, {}.  Discarding old RMC sentence {}.",
-                        rmcSentence, currentRmcSentence);
-                
-                currentRmcSentence = rmcSentence;
-            } else {
-                LOG.warn("Received {}.  GPS device does not have fix.  Ignoring sentence.",
-                        rmcSentence);
+            switch (rmcSentence.getStatusIndicator()) {
+                case ACTIVE:
+                    LOG.debug("Recieved a new RMC sentence, {}.  Discarding old RMC sentence {}.",
+                            rmcSentence, currentRmcSentence);
+                    
+                    currentRmcSentence = rmcSentence;
+                    break;
+                default:
+                    LOG.warn("Received {}.  GPS device does not have fix.  Ignoring sentence.",
+                            rmcSentence);
             }
         } else {
             LOG.debug("Ignoring sentence {}.", sentence);    
