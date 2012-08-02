@@ -180,6 +180,7 @@ public class NmeaRouteManagerTest {
         final List<Long> locationTimes = new ArrayList<Long>();
         final List<Long> systemTimes = new ArrayList<Long>();
         final List<WaypointEventType> eventTypes = new ArrayList<WaypointEventType>();
+        // Collected for comparison of route manager accuracy 
         final List<Long> splitTimes = new ArrayList<Long>();
         
         RouteListener listener = new RouteListener() {
@@ -232,6 +233,12 @@ public class NmeaRouteManagerTest {
         }
         
         assertEquals(5, splitTimes.size());
+        assertEquals(Long.valueOf(16359), splitTimes.get(0));
+        assertEquals(Long.valueOf(12822), splitTimes.get(1));
+        assertEquals(Long.valueOf(45077), splitTimes.get(2));
+        assertEquals(Long.valueOf(11296), splitTimes.get(3));
+        assertEquals(Long.valueOf(36016), splitTimes.get(4));
+        
         
     }
     

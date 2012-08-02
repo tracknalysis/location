@@ -19,9 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +26,7 @@ import java.util.List;
 import org.junit.Test;
 
 import net.tracknalysis.common.io.SocketManager;
+import net.tracknalysis.common.io.StreamSocketManager;
 import net.tracknalysis.location.Location;
 import net.tracknalysis.location.LocationListener;
 
@@ -44,7 +42,8 @@ public class NmeaLocationManagerTest {
                 "$GPGGA,180358.200,3859.0335,N,07731.9688,W,1,6,1.37,113.3,M,-33.4,M,,*6E\r\n"
                 + "$GPRMC,180358.200,A,3859.0335,N,07731.9688,W,0.09,229.39,130512,,,A*78\r\n";
         
-        SocketManager socketManager = new TestSocketManager(new ByteArrayInputStream(sentenceStrings.getBytes()));
+        SocketManager socketManager = new StreamSocketManager(
+                new ByteArrayInputStream(sentenceStrings.getBytes()), null);
         
         NmeaLocationManager locationManager = new NmeaLocationManager(socketManager);
         
@@ -84,8 +83,8 @@ public class NmeaLocationManagerTest {
     @Test
     public void testQStarz818XT() throws Exception {
         
-        SocketManager socketManager = new TestSocketManager(this.getClass()
-                .getResourceAsStream("/QStarz-818XT-NMEA.txt"));
+        SocketManager socketManager = new StreamSocketManager(this.getClass()
+                .getResourceAsStream("/QStarz-818XT-NMEA.txt"), null);
         
         NmeaLocationManager locationManager = new NmeaLocationManager(socketManager);
         
@@ -131,37 +130,6 @@ public class NmeaLocationManagerTest {
             
         } finally {
             locationManager.stop();
-        }
-    }
-    
-    
-    private static class TestSocketManager implements SocketManager {
-        
-        private InputStream is;
-        
-        public TestSocketManager(InputStream is) {
-            super();
-            this.is = is;
-        }
-
-        @Override
-        public void connect() throws IOException {
-            // No-op
-        }
-
-        @Override
-        public void disconnect() throws IOException {
-            // No-op
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return is;
-        }
-
-        @Override
-        public OutputStream getOutputStream() throws IOException {
-            return null;
         }
     }
 }

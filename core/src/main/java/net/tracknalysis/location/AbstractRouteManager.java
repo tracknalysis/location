@@ -213,7 +213,7 @@ public class AbstractRouteManager implements RouteManager {
             RouteState state = entry.getValue();
 
             LOG.trace("Calculating info for route {}.  Current state is {}",
-                    entry.getKey().getId(), state);
+                    entry.getKey().getName(), state);
 
             float triggerDistance = state.getTriggerDistance();
             Waypoint waypoint = entry.getKey().getWaypoints()

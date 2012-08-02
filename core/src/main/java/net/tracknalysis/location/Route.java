@@ -24,12 +24,12 @@ import java.util.List;
  */
 public class Route {
     
-    private String id;
+    private String name;
     private List<Waypoint> waypoints = new ArrayList<Waypoint>();
     
-    public Route(String id, List<Waypoint> waypoints) {
+    public Route(String name, List<Waypoint> waypoints) {
 
-        this.id = id;
+        this.name = name;
         
         if (waypoints != null) {
             this.waypoints = Collections.unmodifiableList(new ArrayList<Waypoint>(waypoints));
@@ -42,8 +42,8 @@ public class Route {
         return this.waypoints;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
     
     
