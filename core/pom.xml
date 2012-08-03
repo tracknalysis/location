@@ -25,9 +25,7 @@ Authors: David Valeri
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>net.tracknalysis.location</groupId> 
   <artifactId>tracknalysis-location-core</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
   
   <name>Tracknalysis :: Location :: Core</name>
   <description>Location manager interface classes and generic implementation.</description>

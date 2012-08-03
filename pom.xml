@@ -28,6 +28,7 @@ Authors: David Valeri
   <groupId>net.tracknalysis.location</groupId>
   <artifactId>tracknalysis-location-parent</artifactId>
   <version>0.1.0-SNAPSHOT</version>
+  
   <packaging>pom</packaging>
   
   <name>Tracknalysis :: Location :: Parent</name>
