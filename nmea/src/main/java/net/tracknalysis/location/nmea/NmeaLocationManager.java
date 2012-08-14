@@ -16,9 +16,7 @@
 package net.tracknalysis.location.nmea;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -31,6 +29,7 @@ import net.tracknalysis.location.Location;
 import net.tracknalysis.location.Location.LocationBuilder;
 import net.tracknalysis.location.LocationListener;
 import net.tracknalysis.location.LocationManager;
+import net.tracknalysis.location.LocationManagerNotificationType;
 import net.tracknalysis.location.Route;
 import net.tracknalysis.location.RouteListener;
 import net.tracknalysis.location.RouteManager;
@@ -44,7 +43,7 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     private static final Logger LOG = LoggerFactory.getLogger(NmeaLocationManager.class);
 
     private final SocketManager socketManager;
-    private final NotificationStrategy notificationStrategy;
+    private final NotificationStrategy<LocationManagerNotificationType> notificationStrategy;
     private NmeaParser nmeaParser;
     
     private GgaSentence currentGgaSentence;
@@ -54,63 +53,24 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     private List<LocationListener> listeners = 
             new CopyOnWriteArrayList<LocationListener>();
     
-    public static enum NotificationType implements net.tracknalysis.common.notification.NotificationType {
-        STARTING,
-        STARTED,
-        /**
-         * Triggered when the the startup of the manager fails.  The notification contains the exception that
-         * triggered the failure.
-         */
-        START_FAILED,
-        STOPPING,
-        STOPPED,
-        /**
-         * Triggered when the the shutdown of the manager fails.  The notification contains the exception that
-         * triggered the failure.
-         */
-        STOP_FAILED;
-        
-        private static final Map<Integer, NotificationType> intToTypeMap = new HashMap<Integer, NotificationType>();
-        
-        static {
-            for (NotificationType type : NotificationType.values()) {
-                intToTypeMap.put(type.ordinal(), type);
-            }
-        }
-
-        public static NotificationType fromInt(int i) {
-            NotificationType type = intToTypeMap.get(Integer.valueOf(i));
-            if (type == null) {
-                throw new IllegalArgumentException(
-                        "No enum const " + i);
-            }
-            return type;
-        }
-        
-        @Override
-        public int getNotificationTypeId() {
-            return ordinal();
-        }
-    }
-    
     public NmeaLocationManager(SocketManager socketManager) {
         this(socketManager, null);
     }
     
-    public NmeaLocationManager(SocketManager socketManager, NotificationStrategy notificationStrategy) {
+    public NmeaLocationManager(SocketManager socketManager, NotificationStrategy<LocationManagerNotificationType> notificationStrategy) {
         this.socketManager = socketManager;
         
         if (notificationStrategy != null) {
             this.notificationStrategy = notificationStrategy;
         } else {
-            this.notificationStrategy = new NoOpNotificationStrategy();
+            this.notificationStrategy = new NoOpNotificationStrategy<LocationManagerNotificationType>();
         }
     }
     
     @Override
     public synchronized void start() {
         if (nmeaParser == null) {
-            notificationStrategy.sendNotification(NotificationType.STARTING);
+            notificationStrategy.sendNotification(LocationManagerNotificationType.STARTING);
             try {
                 // Make sure we are connected if not previously connected.
                 socketManager.connect();
@@ -120,14 +80,14 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
                     nmeaParser.addSynchronousListener(this);
                     nmeaParser.addSynchronousListener(routeManager);
                     nmeaParser.start();
-                    notificationStrategy.sendNotification(NotificationType.STARTED);
+                    notificationStrategy.sendNotification(LocationManagerNotificationType.STARTED);
                 } catch (IOException e) {
-                    notificationStrategy.sendNotification(NotificationType.START_FAILED, e);
+                    notificationStrategy.sendNotification(LocationManagerNotificationType.START_FAILED, e);
                     // TODO error handling
                     throw new RuntimeException("Error retrieving input stream.", e);
                 }
             } catch (IOException e) {
-                notificationStrategy.sendNotification(NotificationType.START_FAILED, e);
+                notificationStrategy.sendNotification(LocationManagerNotificationType.START_FAILED, e);
                 // TODO error handling
                 throw new RuntimeException("Error initiating connection with socket manager.", e);
             }
@@ -139,14 +99,14 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     @Override
     public synchronized void stop() {
         if (nmeaParser != null) {
-            notificationStrategy.sendNotification(NotificationType.STOPPING);
+            notificationStrategy.sendNotification(LocationManagerNotificationType.STOPPING);
             try {
                 nmeaParser.removeSynchronousListener(this);
                 nmeaParser.removeSynchronousListener(routeManager);
                 nmeaParser.stop();
-                notificationStrategy.sendNotification(NotificationType.STOPPED);
+                notificationStrategy.sendNotification(LocationManagerNotificationType.STOPPED);
             } catch (Exception e) {
-                notificationStrategy.sendNotification(NotificationType.STOP_FAILED, e);
+                notificationStrategy.sendNotification(LocationManagerNotificationType.STOP_FAILED, e);
                 // TODO error handling
                 throw new RuntimeException("Error during shutdown.", e);
             }
