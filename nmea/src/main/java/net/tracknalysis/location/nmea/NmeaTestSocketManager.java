@@ -75,7 +75,7 @@ public class NmeaTestSocketManager implements SocketManager {
     }
     
     /**
-     * Sends a number of NMEA sentences returns true if
+     * Sends a number of NMEA sentences returning true if
      * there is more content to send after this pair.
      */
     public boolean sendSentences(int numSentences, long delay) throws IOException, InterruptedException {
