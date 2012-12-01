@@ -20,13 +20,35 @@ package net.tracknalysis.location;
  */
 public interface LocationManager {
     
+	/**
+	 * Start the manager.
+	 */
     void start();
 
+    /**
+	 * Stop the manager.
+	 */
     void stop();
 
+    /**
+     * Registers a new listener for synchronous notifications.  These listeners are intended
+     * for near real-time responses to events and should keep processing to a minimum.  Does
+     * nothing if {@code listener} is already registered.
+     *
+     * @param listener the listener to register
+     */
     void addSynchronousListener(LocationListener listener);
 
+    /**
+     * Removes a previously registered listener.  Does nothing if the listener is
+     * not registered.
+     *
+     * @param listener the listener to remove
+     */
     void removeSynchronousListener(LocationListener listener);
     
+    /**
+     * Returns the {@link RouteManager} in use.
+     */
     RouteManager getRouteManager();
 }

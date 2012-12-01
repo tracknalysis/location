@@ -29,7 +29,7 @@ import net.tracknalysis.location.Location;
 import net.tracknalysis.location.Location.LocationBuilder;
 import net.tracknalysis.location.LocationListener;
 import net.tracknalysis.location.LocationManager;
-import net.tracknalysis.location.LocationManagerNotificationType;
+import net.tracknalysis.location.LocationManagerLifecycleNotificationType;
 import net.tracknalysis.location.Route;
 import net.tracknalysis.location.RouteListener;
 import net.tracknalysis.location.RouteManager;
@@ -43,7 +43,7 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     private static final Logger LOG = LoggerFactory.getLogger(NmeaLocationManager.class);
 
     private final SocketManager socketManager;
-    private final NotificationStrategy<LocationManagerNotificationType> notificationStrategy;
+    private final NotificationStrategy<LocationManagerLifecycleNotificationType> lifecycleNotificationStrategy;
     private NmeaParser nmeaParser;
     
     private GgaSentence currentGgaSentence;
@@ -53,24 +53,40 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     private List<LocationListener> listeners = 
             new CopyOnWriteArrayList<LocationListener>();
     
+    /**
+     * Constructs a new instance.  No lifecycle notifcations will be generated.
+     *
+     * @param socketManager the socket manager to provide data to parse
+     *
+     * @see NmeaLocationManager#NmeaLocationManager(SocketManager, NotificationStrategy)
+     */
     public NmeaLocationManager(SocketManager socketManager) {
         this(socketManager, null);
     }
     
-    public NmeaLocationManager(SocketManager socketManager, NotificationStrategy<LocationManagerNotificationType> notificationStrategy) {
-        this.socketManager = socketManager;
-        
-        if (notificationStrategy != null) {
-            this.notificationStrategy = notificationStrategy;
-        } else {
-            this.notificationStrategy = new NoOpNotificationStrategy<LocationManagerNotificationType>();
-        }
-    }
+    /**
+     * Constructs a new instance.
+     *
+     * @param socketManager the socket manager to provide data to parse
+     * @param lifecycleNotificationStrategy the notification strategy that will receive lifecycle events
+     */
+    public NmeaLocationManager(
+			SocketManager socketManager,
+			NotificationStrategy<LocationManagerLifecycleNotificationType> lifecycleNotificationStrategy) {
+		this.socketManager = socketManager;
+
+		if (lifecycleNotificationStrategy != null) {
+			this.lifecycleNotificationStrategy = lifecycleNotificationStrategy;
+		} else {
+			this.lifecycleNotificationStrategy = 
+					new NoOpNotificationStrategy<LocationManagerLifecycleNotificationType>();
+		}
+	}
     
     @Override
     public synchronized void start() {
         if (nmeaParser == null) {
-            notificationStrategy.sendNotification(LocationManagerNotificationType.STARTING);
+            lifecycleNotificationStrategy.sendNotification(LocationManagerLifecycleNotificationType.STARTING);
             try {
                 // Make sure we are connected if not previously connected.
                 socketManager.connect();
@@ -80,35 +96,45 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
                     nmeaParser.addSynchronousListener(this);
                     nmeaParser.addSynchronousListener(routeManager);
                     nmeaParser.start();
-                    notificationStrategy.sendNotification(LocationManagerNotificationType.STARTED);
+					lifecycleNotificationStrategy
+							.sendNotification(LocationManagerLifecycleNotificationType.STARTED);
                 } catch (IOException e) {
-                    notificationStrategy.sendNotification(LocationManagerNotificationType.START_FAILED, e);
-                    // TODO error handling
-                    throw new RuntimeException("Error retrieving input stream.", e);
+                	LOG.error("Error retrieving input stream.", e);
+                	lifecycleNotificationStrategy
+							.sendNotification(
+									LocationManagerLifecycleNotificationType.START_FAILED,
+									e);
+                	nmeaParser = null;
                 }
             } catch (IOException e) {
-                notificationStrategy.sendNotification(LocationManagerNotificationType.START_FAILED, e);
-                // TODO error handling
-                throw new RuntimeException("Error initiating connection with socket manager.", e);
+            	LOG.error("Error initiating connection with socket manager.", e);
+				lifecycleNotificationStrategy.sendNotification(
+						LocationManagerLifecycleNotificationType.START_FAILED,
+						e);
+				
+				nmeaParser = null;
             }
-        } else {
-            throw new IllegalStateException();
         }
     }
     
     @Override
     public synchronized void stop() {
         if (nmeaParser != null) {
-            notificationStrategy.sendNotification(LocationManagerNotificationType.STOPPING);
+			lifecycleNotificationStrategy
+					.sendNotification(LocationManagerLifecycleNotificationType.STOPPING);
             try {
-                nmeaParser.removeSynchronousListener(this);
-                nmeaParser.removeSynchronousListener(routeManager);
-                nmeaParser.stop();
-                notificationStrategy.sendNotification(LocationManagerNotificationType.STOPPED);
-            } catch (Exception e) {
-                notificationStrategy.sendNotification(LocationManagerNotificationType.STOP_FAILED, e);
-                // TODO error handling
-                throw new RuntimeException("Error during shutdown.", e);
+				nmeaParser.removeSynchronousListener(this);
+				nmeaParser.removeSynchronousListener(routeManager);
+				nmeaParser.stop();
+				nmeaParser = null;
+				lifecycleNotificationStrategy
+						.sendNotification(LocationManagerLifecycleNotificationType.STOPPED);
+			} catch (Exception e) {
+				LOG.error("Error during shutdown.", e);
+				lifecycleNotificationStrategy
+						.sendNotification(
+								LocationManagerLifecycleNotificationType.STOP_FAILED,
+								e);
             }
         }
     }
@@ -131,14 +157,14 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     }
     
     @Override
-    public void addRoute(Route route, float distance,
+    public void addRouteForSynchronousListeners(Route route, float distance,
             RouteListener... listeners) {
-        routeManager.addRoute(route, distance, listeners);
+        routeManager.addRouteForSynchronousListeners(route, distance, listeners);
     }
     
     @Override
-    public void removeRoute(Route route) {
-        routeManager.removeRoute(route);
+    public void removeRouteForSynchronousListeners(Route route) {
+        routeManager.removeRouteForSynchronousListeners(route);
     }
     
     @Override

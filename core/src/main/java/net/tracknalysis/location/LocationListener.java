@@ -16,9 +16,16 @@
 package net.tracknalysis.location;
 
 /**
+ * Interface for observers of location data.
+ *
  * @author David Valeri
  */
 public interface LocationListener {
-
-    void receiveLocation(Location location);
+	
+	/**
+	 * Handle the new location data.
+	 *
+	 * @param location the location data to handle 
+	 */
+	void receiveLocation(Location location);
 }

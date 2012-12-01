@@ -74,7 +74,7 @@ public class NmeaRouteManagerTest {
             }
         };
         
-        routeManager.addRoute(route, 10f, listener);
+        routeManager.addRouteForSynchronousListeners(route, 10f, listener);
         
         routeManager.receiveSentence(createGgaSentence(1, 38.979763,   -77.541084, true));
         routeManager.receiveSentence(createGgaSentence(2, 38.979782,   -77.541077, true));
@@ -206,7 +206,7 @@ public class NmeaRouteManagerTest {
             }
         };
         
-        routeManager.addRoute(route, 15f, listener);
+        routeManager.addRouteForSynchronousListeners(route, 15f, listener);
         
         InputStream is = this.getClass().getResourceAsStream("/RouteManagerTestData.csv");
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));

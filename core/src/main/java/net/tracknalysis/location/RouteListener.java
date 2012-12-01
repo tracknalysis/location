@@ -16,6 +16,8 @@
 package net.tracknalysis.location;
 
 /**
+ * Interface for observers of a {@link RouteManager}.
+ *
  * @author David Valeri
  */
 public interface RouteListener {
@@ -46,21 +48,23 @@ public interface RouteListener {
     }
 
     /**
-     * 
-     * @param int the zero based index of the waypoint in the route that
-     *        triggered the event
-     * @param route
-     *            the route that the current waypoint is part of
-     * @param locationTime
-     *            the millisecond of the day based on the GPS/location provider
-     *            time stamp that triggered the event
-     * @param systemTime
-     *            the time, in milliseconds since midnight January 1, 1970 UTC,
-     *            at which location update that triggered the event occurred
-     *            based on system time.
-     * @param eventType
-     *            the type of the event
-     */
+	 * Called when a waypoint event triggers in the oberved {@link RouteManager}.
+	 * 
+	 * @param waypointIndex
+	 *            the zero based index of the waypoint in the route that
+	 *            triggered the event
+	 * @param route
+	 *            the route that the current waypoint is part of
+	 * @param locationTime
+	 *            the millisecond of the day based on the GPS/location provider
+	 *            time stamp that triggered the event
+	 * @param systemTime
+	 *            the time, in milliseconds since midnight January 1, 1970 UTC,
+	 *            at which the location update that triggered the event occurred
+	 *            based on system time
+	 * @param eventType
+	 *            the type of the event
+	 */
     void waypointEvent(int waypointIndex, Route route, long locationTime,
             long systemTime, WaypointEventType eventType, float distanceToWaypoint);
 }

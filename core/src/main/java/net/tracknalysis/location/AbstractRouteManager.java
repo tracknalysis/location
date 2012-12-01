@@ -175,7 +175,7 @@ public class AbstractRouteManager implements RouteManager {
     }
 
     @Override
-    public final void addRoute(Route route, float distance,
+    public final void addRouteForSynchronousListeners(Route route, float distance,
             RouteListener... listeners) {
 
         RouteState state = routeStateMap.get(route);
@@ -199,7 +199,7 @@ public class AbstractRouteManager implements RouteManager {
     }
 
     @Override
-    public final void removeRoute(Route route) {
+    public final void removeRouteForSynchronousListeners(Route route) {
         routeStateMap.remove(route);
     }
 
@@ -450,9 +450,4 @@ public class AbstractRouteManager implements RouteManager {
             return builder.toString();
         }
     }
-
-    public AbstractRouteManager() {
-        super();
-    }
-
 }
