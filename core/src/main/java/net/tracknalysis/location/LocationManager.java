@@ -15,10 +15,12 @@
  */
 package net.tracknalysis.location;
 
+import net.tracknalysis.common.notification.NotificationListenerRegistry;
+
 /**
  * @author David Valeri
  */
-public interface LocationManager {
+public interface LocationManager extends NotificationListenerRegistry<LocationManagerLifecycleNotificationType> {
     
 	/**
 	 * Start the manager.

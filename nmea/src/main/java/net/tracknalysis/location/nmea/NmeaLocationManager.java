@@ -23,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.tracknalysis.common.io.SocketManager;
-import net.tracknalysis.common.notification.NoOpNotificationStrategy;
-import net.tracknalysis.common.notification.NotificationStrategy;
+import net.tracknalysis.common.notification.DefaultNotificationListenerManager;
+import net.tracknalysis.common.notification.NotificationListener;
+import net.tracknalysis.common.notification.NotificationListenerManager;
+import net.tracknalysis.common.notification.NotificationListenerRegistry;
 import net.tracknalysis.location.Location;
 import net.tracknalysis.location.Location.LocationBuilder;
 import net.tracknalysis.location.LocationListener;
@@ -38,12 +40,14 @@ import net.tracknalysis.location.nmea.simple.SimpleNmeaParser;
 /**
  * @author David Valeri
  */
-public class NmeaLocationManager implements RouteManager, LocationManager, NmeaSentenceListener {
+public class NmeaLocationManager implements RouteManager, LocationManager,
+		NmeaSentenceListener,
+		NotificationListenerRegistry<LocationManagerLifecycleNotificationType> {
     
     private static final Logger LOG = LoggerFactory.getLogger(NmeaLocationManager.class);
 
     private final SocketManager socketManager;
-    private final NotificationStrategy<LocationManagerLifecycleNotificationType> lifecycleNotificationStrategy;
+    private final NotificationListenerManager<LocationManagerLifecycleNotificationType> lifecycleNotificationListenerManager;
     private NmeaParser nmeaParser;
     
     private GgaSentence currentGgaSentence;
@@ -54,39 +58,24 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
             new CopyOnWriteArrayList<LocationListener>();
     
     /**
-     * Constructs a new instance.  No lifecycle notifcations will be generated.
-     *
-     * @param socketManager the socket manager to provide data to parse
-     *
-     * @see NmeaLocationManager#NmeaLocationManager(SocketManager, NotificationStrategy)
-     */
-    public NmeaLocationManager(SocketManager socketManager) {
-        this(socketManager, null);
-    }
-    
-    /**
      * Constructs a new instance.
      *
      * @param socketManager the socket manager to provide data to parse
      * @param lifecycleNotificationStrategy the notification strategy that will receive lifecycle events
      */
-    public NmeaLocationManager(
-			SocketManager socketManager,
-			NotificationStrategy<LocationManagerLifecycleNotificationType> lifecycleNotificationStrategy) {
+    public NmeaLocationManager(SocketManager socketManager) {
 		this.socketManager = socketManager;
 
-		if (lifecycleNotificationStrategy != null) {
-			this.lifecycleNotificationStrategy = lifecycleNotificationStrategy;
-		} else {
-			this.lifecycleNotificationStrategy = 
-					new NoOpNotificationStrategy<LocationManagerLifecycleNotificationType>();
-		}
+		lifecycleNotificationListenerManager = 
+				new DefaultNotificationListenerManager<LocationManagerLifecycleNotificationType>(
+						LocationManagerLifecycleNotificationType.STOPPED, null);
 	}
     
     @Override
     public synchronized void start() {
         if (nmeaParser == null) {
-            lifecycleNotificationStrategy.sendNotification(LocationManagerLifecycleNotificationType.STARTING);
+			lifecycleNotificationListenerManager
+					.sendNotification(LocationManagerLifecycleNotificationType.STARTING);
             try {
                 // Make sure we are connected if not previously connected.
                 socketManager.connect();
@@ -96,11 +85,11 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
                     nmeaParser.addSynchronousListener(this);
                     nmeaParser.addSynchronousListener(routeManager);
                     nmeaParser.start();
-					lifecycleNotificationStrategy
+                    lifecycleNotificationListenerManager
 							.sendNotification(LocationManagerLifecycleNotificationType.STARTED);
                 } catch (IOException e) {
                 	LOG.error("Error retrieving input stream.", e);
-                	lifecycleNotificationStrategy
+                	lifecycleNotificationListenerManager
 							.sendNotification(
 									LocationManagerLifecycleNotificationType.START_FAILED,
 									e);
@@ -108,7 +97,7 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
                 }
             } catch (IOException e) {
             	LOG.error("Error initiating connection with socket manager.", e);
-				lifecycleNotificationStrategy.sendNotification(
+            	lifecycleNotificationListenerManager.sendNotification(
 						LocationManagerLifecycleNotificationType.START_FAILED,
 						e);
 				
@@ -120,18 +109,18 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
     @Override
     public synchronized void stop() {
         if (nmeaParser != null) {
-			lifecycleNotificationStrategy
+        	lifecycleNotificationListenerManager
 					.sendNotification(LocationManagerLifecycleNotificationType.STOPPING);
             try {
 				nmeaParser.removeSynchronousListener(this);
 				nmeaParser.removeSynchronousListener(routeManager);
 				nmeaParser.stop();
 				nmeaParser = null;
-				lifecycleNotificationStrategy
+				lifecycleNotificationListenerManager
 						.sendNotification(LocationManagerLifecycleNotificationType.STOPPED);
 			} catch (Exception e) {
 				LOG.error("Error during shutdown.", e);
-				lifecycleNotificationStrategy
+				lifecycleNotificationListenerManager
 						.sendNotification(
 								LocationManagerLifecycleNotificationType.STOP_FAILED,
 								e);
@@ -243,4 +232,29 @@ public class NmeaLocationManager implements RouteManager, LocationManager, NmeaS
             }
         }
     }
+
+	@Override
+	public void addListener(
+			NotificationListener<LocationManagerLifecycleNotificationType> listener) {
+		lifecycleNotificationListenerManager.addListener(listener);
+	}
+
+	@Override
+	public void removeListener(
+			NotificationListener<LocationManagerLifecycleNotificationType> listener) {
+		lifecycleNotificationListenerManager.removeListener(listener);
+		
+	}
+
+	@Override
+	public void addWeakReferenceListener(
+			NotificationListener<LocationManagerLifecycleNotificationType> listener) {
+		lifecycleNotificationListenerManager.addWeakReferenceListener(listener);
+	}
+
+	@Override
+	public void removeWeakReferenceListener(
+			NotificationListener<LocationManagerLifecycleNotificationType> listener) {
+		lifecycleNotificationListenerManager.removeWeakReferenceListener(listener);
+	}
 }

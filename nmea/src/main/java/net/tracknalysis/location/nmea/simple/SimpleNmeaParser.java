@@ -129,9 +129,9 @@ public class SimpleNmeaParser implements NmeaParser {
                 reader = new BufferedReader(new InputStreamReader(nmeaInputStream, "UTF-8"));
                 currentChar = reader.read();
             } catch (Exception e) {
-                if (run) {
+                if (keepRunning()) {
                     LOG.error("Error initiating NMEA reader.  NMEA reader thread terminating.", e);
-                    run = false;
+                    return;
                 } else {
                     LOG.info("Error thrown while stopping NMEA reader thread.", e);
                 }
@@ -143,7 +143,7 @@ public class SimpleNmeaParser implements NmeaParser {
             long sentenceStartTime = 0;
             long sentenceEndTime = 0;
             
-            while(run && currentChar != -1) {
+            while(keepRunning() && currentChar != -1) {
                 
                 if ('$' == (char) currentChar) {
                     sBuffer.setLength(0);
@@ -319,9 +319,9 @@ public class SimpleNmeaParser implements NmeaParser {
                     
                     String logMessage = "Exception while parsing NMEA input.  Parser was in "
                             + "state '" + state + "' and parser buffer contains '" + buffer
-                            + "' parser running is " + run + ".";
+                            + "' parser running is " + keepRunning() + ".";
                     
-                    if (run) {
+                    if (keepRunning()) {
                         LOG.error(logMessage, e);
                     } else {
                         LOG.info(logMessage, e);
